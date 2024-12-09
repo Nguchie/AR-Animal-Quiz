@@ -8,8 +8,6 @@
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
-    <!-- WebXR -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-webxr.min.js"></script>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -88,7 +86,7 @@
     <!-- Game Screen -->
     <div id="game-screen" class="screen">
         <h1>Guess the Animal!</h1>
-        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" style="width: 100%; height: 100%;">
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;" style="width: 100%; height: 100%;" arjs="trackingMethod: best;">
             <a-assets>
                 <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
                 <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
@@ -101,6 +99,7 @@
             
             <!-- Camera (for AR display) -->
             <a-camera position="0 0 0" look-controls="pointerLockEnabled: true;"></a-camera>
+
         </a-scene>
         <div id="options"></div>
     </div>
@@ -175,28 +174,28 @@
             });
         }
 
-        // Check the answer
-        function checkAnswer(answer) {
-            if (answer === correctAnimal) {
+        // Check if the selected answer is correct
+        function checkAnswer(selectedName) {
+            if (selectedName === correctAnimal) {
                 coins += 10;
                 document.getElementById('coin-display').innerText = `Coins: ${coins}`;
-                document.querySelector('#win-screen').classList.add('active');
-                setTimeout(nextLevel, 2000);
+                document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+                document.getElementById('win-screen').classList.add('active');
             } else {
-                document.querySelector('#lose-screen').classList.add('active');
-                setTimeout(startGame, 2000);
+                document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+                document.getElementById('lose-screen').classList.add('active');
             }
         }
 
-        // Move to the next level
+        // Go to the next level
         function nextLevel() {
             currentLevel++;
             if (currentLevel < animals.length) {
                 loadAnimalForLevel(currentLevel);
-                document.querySelector('#win-screen').classList.remove('active');
+                document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+                document.getElementById('game-screen').classList.add('active');
             } else {
-                alert("Congratulations, you've completed all the levels!");
-                startGame();
+                alert("You've completed all levels!");
             }
         }
     </script>
