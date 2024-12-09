@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animal Guessing AR Game</title>
+       <script type="text/javascript" src="game.js"></script>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
     <style>
@@ -111,65 +112,6 @@
         <button onclick="startGame()">Try Again</button>
     </div>
 
-    <script>
-        const animals = [
-            { name: "cat", model: "#cat" },
-            { name: "rat", model: "#rat" },
-            { name: "toad", model: "#toad" },
-            { name: "lioness", model: "#lioness" },
-        ];
 
-        let correctAnimal;
-        let coins = 0;
-
-        // Start the game
-        function startGame() {
-            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
-            document.getElementById('game-screen').classList.add('active');
-            loadRandomAnimal();
-        }
-
-        // Load a random animal
-        function loadRandomAnimal() {
-            const randomIndex = Math.floor(Math.random() * animals.length);
-            const selectedAnimal = animals[randomIndex];
-            correctAnimal = selectedAnimal.name;
-
-            // Display animal model in AR
-            const animalEntity = document.querySelector('#animal-model');
-            animalEntity.setAttribute('gltf-model', selectedAnimal.model);
-
-            // Create answer options
-            createOptions();
-        }
-
-        // Generate answer options
-        function createOptions() {
-            const optionsContainer = document.getElementById('options');
-            optionsContainer.innerHTML = '';
-            const shuffled = [...animals].sort(() => 0.5 - Math.random());
-
-            shuffled.forEach(animal => {
-                const button = document.createElement('button');
-                button.innerText = animal.name;
-                button.onclick = () => checkAnswer(animal.name);
-                optionsContainer.appendChild(button);
-            });
-        }
-
-        // Check if the selected answer is correct
-        function checkAnswer(selectedName) {
-            if (selectedName === correctAnimal) {
-                coins += 10;
-                document.getElementById('coin-display').innerText = `Coins: ${coins}`;
-                document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
-                document.getElementById('win-screen').classList.add('active');
-                loadRandomAnimal();  // Load next animal after a win
-            } else {
-                document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
-                document.getElementById('lose-screen').classList.add('active');
-            }
-        }
-    </script>
 </body>
 </html>
