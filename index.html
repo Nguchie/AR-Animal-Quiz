@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animal Guessing AR Game</title>
-    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <!-- AR.js -->
-    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -74,6 +72,13 @@
     </style>
 </head>
 <body>
+    <a-assets>
+                <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
+                <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
+                <a-asset-item id="toad" src="./assets/toad.glb"></a-asset-item>
+                <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
+    </a-assets>
+    
     <div id="coin-display">Coins: 0</div>
 
     <!-- Start Screen -->
@@ -86,19 +91,8 @@
     <!-- Game Screen -->
     <div id="game-screen" class="screen">
         <h1>Guess the Animal!</h1>
-        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-            <a-assets>
-                <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
-                <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
-                <a-asset-item id="toad" src="./assets/toad.glb"></a-asset-item>
-                <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
-            </a-assets>
-
-            <!-- Animal Model Placeholder (will change dynamically) -->
-            <a-entity id="animal-model" position="0 0 -2" scale="0.5 0.5 0.5"></a-entity>
-            
-            <!-- Camera (for AR display) -->
-            <a-camera></a-camera>
+        <a-scene embedded arjs>
+            <a-entity id="animal-model" position="0 1 -2"></a-entity>
         </a-scene>
         <div id="options"></div>
     </div>
@@ -144,8 +138,6 @@
             // Display animal model in AR
             const animalEntity = document.querySelector('#animal-model');
             animalEntity.setAttribute('gltf-model', selectedAnimal.model);
-            animalEntity.setAttribute('position', '0 0 -2'); // Center the model
-            animalEntity.setAttribute('scale', '0.3 0.3 0.3'); // Adjust scale for visibility
 
             // Create answer options
             createOptions();
@@ -172,6 +164,7 @@
                 document.getElementById('coin-display').innerText = `Coins: ${coins}`;
                 document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
                 document.getElementById('win-screen').classList.add('active');
+                loadRandomAnimal();  // Load next animal after a win
             } else {
                 document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
                 document.getElementById('lose-screen').classList.add('active');
