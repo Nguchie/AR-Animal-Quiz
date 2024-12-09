@@ -6,6 +6,8 @@
     <title>Animal Guessing AR Game</title>
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- WebXR -->
+    <script src="https://cdn.jsdelivr.net/npm/aframe-webxr.min.js"></script>
     <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
     <style>
@@ -100,6 +102,8 @@
             <!-- Camera (for AR display) -->
             <a-camera position="0 0 0" look-controls="pointerLockEnabled: true;"></a-camera>
 
+            <!-- AR WebXR Plane Detection for flat surfaces -->
+            <a-plane id="flat-surface" width="5" height="5" position="0 0 -5" color="#7BC8A4" visible="false"></a-plane>
         </a-scene>
         <div id="options"></div>
     </div>
