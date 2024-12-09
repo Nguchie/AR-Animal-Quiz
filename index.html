@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animal Guessing AR Game</title>
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.8thwall.com/web/xrextras/xrextras.js"></script>
+    <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -76,7 +78,7 @@
 
     <!-- Start Screen -->
     <div id="start-screen" class="screen active">
-        <h1>Welcome to Animal Guessing AR!</h1>
+        <h1>Welcome to Animal guessing AR!</h1>
         <p>Can you guess the name of the animals?</p>
         <button onclick="startGame()">Play</button>
     </div>
@@ -84,7 +86,7 @@
     <!-- Game Screen -->
     <div id="game-screen" class="screen">
         <h1>Guess the Animal!</h1>
-        <a-scene xrweb>
+        <a-scene embedded arjs>
             <a-assets>
                 <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
                 <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
@@ -92,11 +94,11 @@
                 <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
             </a-assets>
 
-            <!-- Camera -->
-            <a-entity camera></a-entity>
-
             <!-- Animal Model Placeholder -->
-            <a-entity id="animal-model" position="0 1 -2"></a-entity>
+            <a-entity id="animal-model" position="0 0 -2" scale="0.5 0.5 0.5"></a-entity>
+            
+            <!-- Camera -->
+            <a-camera position="0 0 0"></a-camera>
         </a-scene>
         <div id="options"></div>
     </div>
@@ -142,6 +144,8 @@
             // Display animal model in AR
             const animalEntity = document.querySelector('#animal-model');
             animalEntity.setAttribute('gltf-model', selectedAnimal.model);
+            animalEntity.setAttribute('position', '0 0 -2'); // Reset position
+            animalEntity.setAttribute('scale', '0.5 0.5 0.5'); // Adjust scale
 
             // Create answer options
             createOptions();
