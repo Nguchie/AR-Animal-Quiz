@@ -1,4 +1,5 @@
-// Define the animals and their models
+let coins = 0; // Track coins
+
 const animals = [
     { name: "cat", model: "./assets/cat.glb" },
     { name: "rat", model: "./assets/rat.glb" },
@@ -30,7 +31,7 @@ function loadRandomAnimal() {
     const animalEntity = document.querySelector('#animal-model');
     animalEntity.setAttribute('gltf-model', selectedAnimal.model);
 
-    // Generate answer options
+    // Update the options
     createOptions();
 }
 
@@ -52,6 +53,10 @@ function createOptions() {
 // Check if the selected answer is correct
 function checkAnswer(selectedName) {
     if (selectedName === correctAnimal) {
+        // Update coins
+        coins += 10;
+        document.getElementById('coin-display').innerText = `Coins: ${coins}`;
+
         // Show win screen
         document.getElementById('game-screen').style.display = 'none';
         document.getElementById('win-screen').style.display = 'block';
@@ -61,14 +66,12 @@ function checkAnswer(selectedName) {
         document.getElementById('lose-screen').style.display = 'block';
     }
 }
-function checkAnswer(selectedName) {
-    if (selectedName === correctAnimal) {
-        coins += 10; // Add coins
-        document.getElementById('game-screen').style.display = 'none';
-        document.getElementById('win-screen').style.display = 'block';
-        console.log("Coins:", coins); // Log for testing
-    } else {
-        document.getElementById('game-screen').style.display = 'none';
-        document.getElementById('lose-screen').style.display = 'block';
-    }
+
+// Reload the game after a win or loss
+function reloadGame() {
+    document.getElementById('win-screen').style.display = 'none';
+    document.getElementById('lose-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+
+    loadRandomAnimal(); // Load a new random animal
 }
