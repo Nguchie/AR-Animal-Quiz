@@ -78,7 +78,7 @@
 
     <!-- Start Screen -->
     <div id="start-screen" class="screen active">
-        <h1>Welcome to Animal guessing AR!</h1>
+        <h1>Welcome to Animal Guessing AR!</h1>
         <p>Can you guess the name of the animals?</p>
         <button onclick="startGame()">Play</button>
     </div>
@@ -94,11 +94,11 @@
                 <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
             </a-assets>
 
-            <!-- Animal Model Placeholder -->
-            <a-entity id="animal-model" gltf-model="#cat" position="0 -1 -2" scale="0.5 0.5 0.5"></a-entity>
+            <!-- Animal Model Placeholder (will change dynamically) -->
+            <a-entity id="animal-model" position="0 0 -2" scale="0.5 0.5 0.5"></a-entity>
             
-            <!-- Camera -->
-            <a-camera position="0 0 0"></a-camera>
+            <!-- Camera (for AR display) -->
+            <a-camera></a-camera>
         </a-scene>
         <div id="options"></div>
     </div>
@@ -144,8 +144,8 @@
             // Display animal model in AR
             const animalEntity = document.querySelector('#animal-model');
             animalEntity.setAttribute('gltf-model', selectedAnimal.model);
-            animalEntity.setAttribute('position', '0 0 -2'); // Reset position
-            animalEntity.setAttribute('scale', '0.5 0.5 0.5'); // Adjust scale
+            animalEntity.setAttribute('position', '0 0 -2'); // Center the model
+            animalEntity.setAttribute('scale', '0.5 0.5 0.5'); // Adjust scale for visibility
 
             // Create answer options
             createOptions();
