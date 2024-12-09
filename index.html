@@ -4,101 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animal Guessing AR Game</title>
-    <script type="text/javascript" src="game.js"></script>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
     <style>
         body {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    background-color: #f3f8ff;
-    overflow: hidden; /* Prevents unnecessary scrolling */
-}
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f8ff;
+        }
 
-.screen {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #f3f8ff;
-    color: #333;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
+        .screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #f3f8ff;
+            color: #333;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
-.active {
-    display: flex !important;
-}
+        .active {
+            display: flex !important;
+        }
 
-button {
-    background-color: #fcb900;
-    border: none;
-    padding: 15px 25px;
-    margin: 10px;
-    border-radius: 10px;
-    font-size: 20px;
-    color: white;
-    cursor: pointer;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-}
+        button {
+            background-color: #fcb900;
+            border: none;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 10px;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        }
 
-button:hover {
-    background-color: #e6a500;
-}
+        button:hover {
+            background-color: #e6a500;
+        }
 
-#options button {
-    background-color: #34c9eb;
-}
+        #options button {
+            background-color: #34c9eb;
+        }
 
-h1 {
-    font-size: 2.5rem;
-    color: #4a90e2;
-}
+        h1 {
+            font-size: 2.5rem;
+            color: #4a90e2;
+        }
 
-#coin-display {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ffcc00;
-    padding: 10px;
-    border-radius: 10px;
-    color: white;
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-/* Fix position for options container */
-#options {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    bottom: 20px; /* Adjust this value to fine-tune vertical positioning */
-    width: 100%;
-    z-index: 10;
-}
-
-#options button {
-    background-color: #34c9eb;
-    width: 200px; /* Adjust button width */
-    margin: 10px 0;
-    font-size: 18px; /* Adjust font size */
-}
-
+        #coin-display {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffcc00;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
     <a-assets>
-        <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
-        <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
-        <a-asset-item id="toad" src="./assets/toad.glb"></a-asset-item>
-        <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
+        <a-asset-item id="cat" src="path/to/cat-model.glb"></a-asset-item>
+        <a-asset-item id="rat" src="path/to/rat-model.glb"></a-asset-item>
+        <a-asset-item id="toad" src="path/to/toad-model.glb"></a-asset-item>
+        <a-asset-item id="lioness" src="path/to/lioness-model.glb"></a-asset-item>
     </a-assets>
     
     <div id="coin-display">Coins: 0</div>
@@ -123,14 +101,75 @@ h1 {
     <div id="win-screen" class="screen">
         <h1>🎉 You Got It! 🎉</h1>
         <p>Great job! You've earned 10 coins.</p>
-        <button onclick="reloadGame()">Next Level</button>
+        <button onclick="startGame()">Next Level</button>
     </div>
 
     <!-- Lose Screen -->
     <div id="lose-screen" class="screen">
         <h1>😢 Oops! Try Again! 😢</h1>
         <p>Better luck next time!</p>
-        <button onclick="reloadGame()">Try Again</button>
+        <button onclick="startGame()">Try Again</button>
     </div>
+
+    <script>
+        const animals = [
+            { name: "cat", model: "#cat" },
+            { name: "rat", model: "#rat" },
+            { name: "toad", model: "#toad" },
+            { name: "lioness", model: "#lioness" },
+        ];
+
+        let correctAnimal;
+        let coins = 0;
+
+        // Start the game
+        function startGame() {
+            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+            document.getElementById('game-screen').classList.add('active');
+            loadRandomAnimal();
+        }
+
+        // Load a random animal
+        function loadRandomAnimal() {
+            const randomIndex = Math.floor(Math.random() * animals.length);
+            const selectedAnimal = animals[randomIndex];
+            correctAnimal = selectedAnimal.name;
+
+            // Display animal model in AR
+            const animalEntity = document.querySelector('#animal-model');
+            animalEntity.setAttribute('gltf-model', selectedAnimal.model);
+
+            // Create answer options
+            createOptions();
+        }
+
+        // Generate answer options
+        function createOptions() {
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            const shuffled = [...animals].sort(() => 0.5 - Math.random());
+
+            shuffled.forEach(animal => {
+                const button = document.createElement('button');
+                button.innerText = animal.name;
+                button.onclick = () => checkAnswer(animal.name);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // Check if the selected answer is correct
+        function checkAnswer(selectedName) {
+            if (selectedName === correctAnimal) {
+                coins += 10;
+                document.getElementById('coin-display').innerText = `Coins: ${coins}`;
+                document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+                document.getElementById('win-screen').classList.add('active');
+                loadRandomAnimal();  // Load next animal after a win
+            } else {
+                document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+                document.getElementById('lose-screen').classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>
