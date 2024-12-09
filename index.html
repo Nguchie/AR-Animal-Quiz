@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animal Guessing Game</title>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+    <title>Animal Guessing AR Game</title>
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -13,11 +15,6 @@
             margin: 0;
             padding: 0;
             background-color: #f3f8ff;
-        }
-
-        canvas {
-            display: block;
-            margin: 0 auto;
         }
 
         .screen {
@@ -81,7 +78,7 @@
 
     <!-- Start Screen -->
     <div id="start-screen" class="screen active">
-        <h1>Welcome to Animal Guessing Game!</h1>
+        <h1>Welcome to Animal Guessing AR!</h1>
         <p>Can you guess the name of the animals?</p>
         <button onclick="startGame()">Play</button>
     </div>
@@ -89,7 +86,20 @@
     <!-- Game Screen -->
     <div id="game-screen" class="screen">
         <h1>Guess the Animal!</h1>
-        <div id="game-canvas"></div>
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+            <a-assets>
+                <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
+                <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
+                <a-asset-item id="toad" src="./assets/toad.glb"></a-asset-item>
+                <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
+            </a-assets>
+
+            <!-- Animal Model Placeholder (will change dynamically) -->
+            <a-entity id="animal-model" position="0 0 -2" scale="0.5 0.5 0.5"></a-entity>
+            
+            <!-- Camera (for AR display) -->
+            <a-camera></a-camera>
+        </a-scene>
         <div id="options"></div>
     </div>
 
@@ -109,60 +119,39 @@
 
     <script>
         const animals = [
-            { name: "cat", model: "./assets/cat.glb" },
-            { name: "rat", model: "./assets/rat.glb" },
-            { name: "toad", model: "./assets/toad.glb" },
-            { name: "lioness", model: "./assets/lioness.glb" },
+            { name: "cat", model: "#cat" },
+            { name: "rat", model: "#rat" },
+            { name: "toad", model: "#toad" },
+            { name: "lioness", model: "#lioness" },
         ];
 
         let correctAnimal;
         let coins = 0;
-        let scene, camera, renderer, loader, animalObject;
 
-        // Initialize Three.js Scene
-        function initScene() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 2;
-
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.getElementById('game-canvas').appendChild(renderer.domElement);
-
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(2, 2, 5);
-            scene.add(light);
-
-            loader = new THREE.GLTFLoader();
-        }
-
+        // Start the game
         function startGame() {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             document.getElementById('game-screen').classList.add('active');
-
-            if (!scene) initScene();
             loadRandomAnimal();
         }
 
+        // Load a random animal
         function loadRandomAnimal() {
-            if (animalObject) {
-                scene.remove(animalObject);
-            }
-
             const randomIndex = Math.floor(Math.random() * animals.length);
             const selectedAnimal = animals[randomIndex];
             correctAnimal = selectedAnimal.name;
 
-            loader.load(selectedAnimal.model, gltf => {
-                animalObject = gltf.scene;
-                animalObject.scale.set(0.5, 0.5, 0.5);
-                scene.add(animalObject);
-                render();
-            });
+            // Display animal model in AR
+            const animalEntity = document.querySelector('#animal-model');
+            animalEntity.setAttribute('gltf-model', selectedAnimal.model);
+            animalEntity.setAttribute('position', '0 0 -2'); // Center the model
+            animalEntity.setAttribute('scale', '0.3 0.3 0.3'); // Adjust scale for visibility
 
+            // Create answer options
             createOptions();
         }
 
+        // Generate answer options
         function createOptions() {
             const optionsContainer = document.getElementById('options');
             optionsContainer.innerHTML = '';
@@ -176,6 +165,7 @@
             });
         }
 
+        // Check if the selected answer is correct
         function checkAnswer(selectedName) {
             if (selectedName === correctAnimal) {
                 coins += 10;
@@ -186,11 +176,6 @@
                 document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
                 document.getElementById('lose-screen').classList.add('active');
             }
-        }
-
-        function render() {
-            requestAnimationFrame(render);
-            renderer.render(scene, camera);
         }
     </script>
 </body>
