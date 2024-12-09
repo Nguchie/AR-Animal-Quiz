@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animal Guessing AR Game</title>
-       <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="game.js"></script>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
     <style>
@@ -74,10 +74,10 @@
 </head>
 <body>
     <a-assets>
-                <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
-                <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
-                <a-asset-item id="toad" src="./assets/toad.glb"></a-asset-item>
-                <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
+        <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
+        <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
+        <a-asset-item id="toad" src="./assets/toad.glb"></a-asset-item>
+        <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
     </a-assets>
     
     <div id="coin-display">Coins: 0</div>
@@ -102,16 +102,14 @@
     <div id="win-screen" class="screen">
         <h1>🎉 You Got It! 🎉</h1>
         <p>Great job! You've earned 10 coins.</p>
-        <button onclick="startGame()">Next Level</button>
+        <button onclick="reloadGame()">Next Level</button>
     </div>
 
     <!-- Lose Screen -->
     <div id="lose-screen" class="screen">
         <h1>😢 Oops! Try Again! 😢</h1>
         <p>Better luck next time!</p>
-        <button onclick="startGame()">Try Again</button>
+        <button onclick="reloadGame()">Try Again</button>
     </div>
-
-
 </body>
 </html>
