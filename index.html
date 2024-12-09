@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animal Guessing AR Game</title>
-    <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <!-- WebXR -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-webxr.min.js"></script>
-    <!-- AR.js -->
-    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -18,7 +12,11 @@
             padding: 0;
             background-color: #f3f8ff;
         }
-
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
         .screen {
             display: none;
             position: absolute;
@@ -32,11 +30,9 @@
             align-items: center;
             flex-direction: column;
         }
-
         .active {
             display: flex !important;
         }
-
         button {
             background-color: #fcb900;
             border: none;
@@ -48,20 +44,9 @@
             cursor: pointer;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
         }
-
         button:hover {
             background-color: #e6a500;
         }
-
-        #options button {
-            background-color: #34c9eb;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            color: #4a90e2;
-        }
-
         #coin-display {
             position: absolute;
             top: 10px;
@@ -88,23 +73,7 @@
     <!-- Game Screen -->
     <div id="game-screen" class="screen">
         <h1>Guess the Animal!</h1>
-        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;" style="width: 100%; height: 100%;" arjs="trackingMethod: best;">
-            <a-assets>
-                <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
-                <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
-                <a-asset-item id="toad" src="./assets/toad.glb"></a-asset-item>
-                <a-asset-item id="lioness" src="./assets/lioness.glb"></a-asset-item>
-            </a-assets>
-
-            <!-- Animal Model Placeholder (will change dynamically) -->
-            <a-entity id="animal-model" position="0 0 -2" scale="0.5 0.5 0.5"></a-entity>
-            
-            <!-- Camera (for AR display) -->
-            <a-camera position="0 0 0" look-controls="pointerLockEnabled: true;"></a-camera>
-
-            <!-- AR WebXR Plane Detection for flat surfaces -->
-            <a-plane id="flat-surface" width="5" height="5" position="0 0 -5" color="#7BC8A4" visible="false"></a-plane>
-        </a-scene>
+        <div id="xr-container"></div> <!-- WebXR container -->
         <div id="options"></div>
     </div>
 
@@ -122,17 +91,67 @@
         <button onclick="startGame()">Try Again</button>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webxr-input-profiles/motion-controllers@2.0.0/dist/index.js"></script>
     <script>
+        let renderer, scene, camera, controller;
+        let xrSession = null;
+        let currentLevel = 0;
+        let coins = 0;
         const animals = [
             { name: "toad", model: "./assets/toad.glb" },
             { name: "lioness", model: "./assets/lioness.glb" },
             { name: "rat", model: "./assets/rat.glb" },
             { name: "cat", model: "./assets/cat.glb" },
         ];
-
         let correctAnimal;
-        let currentLevel = 0;
-        let coins = 0;
+        let animalModel;
+
+        // Set up WebXR and Three.js
+        function initXR() {
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById("xr-container").appendChild(renderer.domElement);
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 1.6, 3); // Camera position for AR
+
+            // Set up lighting
+            const light = new THREE.AmbientLight(0x404040); // Ambient light
+            scene.add(light);
+
+            // Set up the XR controller (for interaction)
+            controller = new THREE.XRController();
+            scene.add(controller);
+
+            // Set up AR session
+            navigator.xr.requestSession('immersive-ar', {
+                requiredFeatures: ['hit-test']
+            }).then(onXRSessionStarted);
+        }
+
+        // Handle XR session start
+        function onXRSessionStarted(session) {
+            xrSession = session;
+            renderer.xr.enabled = true;
+            xrSession.addEventListener('end', onXRSessionEnded);
+            animate();
+        }
+
+        // Handle XR session end
+        function onXRSessionEnded() {
+            xrSession = null;
+        }
+
+        // Animation loop for WebXR
+        function animate() {
+            if (xrSession) {
+                xrSession.requestAnimationFrame(animate);
+            }
+            renderer.render(scene, camera);
+        }
 
         // Start the game
         function startGame() {
@@ -148,17 +167,16 @@
             const selectedAnimal = animals[level];
             correctAnimal = selectedAnimal.name;
 
-            // Display animal model in AR
-            const animalEntity = document.querySelector('#animal-model');
-            animalEntity.setAttribute('gltf-model', selectedAnimal.model);
-            animalEntity.setAttribute('position', '0 0 -2'); // Center the model
-
-            // Apply specific scale for the cat model
-            if (selectedAnimal.name === "cat") {
-                animalEntity.setAttribute('scale', '0.3 0.3 0.3'); // Adjust scale for cat
-            } else {
-                animalEntity.setAttribute('scale', '0.5 0.5 0.5'); // Default scale for other animals
-            }
+            // Load 3D model for animal
+            const loader = new THREE.GLTFLoader();
+            loader.load(selectedAnimal.model, (gltf) => {
+                if (animalModel) {
+                    scene.remove(animalModel); // Remove previous model if it exists
+                }
+                animalModel = gltf.scene;
+                animalModel.scale.set(0.5, 0.5, 0.5); // Adjust scale
+                scene.add(animalModel);
+            });
 
             // Create answer options
             createOptions();
@@ -202,6 +220,11 @@
                 alert("You've completed all levels!");
             }
         }
+
+        // Initialize the game and XR
+        window.onload = function() {
+            initXR();
+        };
     </script>
 </body>
 </html>
