@@ -9,67 +9,88 @@
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
     <style>
         body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background-color: #f3f8ff;
-        }
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: #f3f8ff;
+    overflow: hidden; /* Prevents unnecessary scrolling */
+}
 
-        .screen {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #f3f8ff;
-            color: #333;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+.screen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f3f8ff;
+    color: #333;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 
-        .active {
-            display: flex !important;
-        }
+.active {
+    display: flex !important;
+}
 
-        button {
-            background-color: #fcb900;
-            border: none;
-            padding: 15px 25px;
-            margin: 10px;
-            border-radius: 10px;
-            font-size: 20px;
-            color: white;
-            cursor: pointer;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-        }
+button {
+    background-color: #fcb900;
+    border: none;
+    padding: 15px 25px;
+    margin: 10px;
+    border-radius: 10px;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
 
-        button:hover {
-            background-color: #e6a500;
-        }
+button:hover {
+    background-color: #e6a500;
+}
 
-        #options button {
-            background-color: #34c9eb;
-        }
+#options button {
+    background-color: #34c9eb;
+}
 
-        h1 {
-            font-size: 2.5rem;
-            color: #4a90e2;
-        }
+h1 {
+    font-size: 2.5rem;
+    color: #4a90e2;
+}
 
-        #coin-display {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ffcc00;
-            padding: 10px;
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
+#coin-display {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ffcc00;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Fix position for options container */
+#options {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 20px; /* Adjust this value to fine-tune vertical positioning */
+    width: 100%;
+    z-index: 10;
+}
+
+#options button {
+    background-color: #34c9eb;
+    width: 200px; /* Adjust button width */
+    margin: 10px 0;
+    font-size: 18px; /* Adjust font size */
+}
+
     </style>
 </head>
 <body>
