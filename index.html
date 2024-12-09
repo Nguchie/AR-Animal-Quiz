@@ -86,7 +86,7 @@
     <!-- Game Screen -->
     <div id="game-screen" class="screen">
         <h1>Guess the Animal!</h1>
-        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" style="width: 100%; height: 100%;">
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;" style="width: 100%; height: 100%;" arjs="trackingMethod: best;">
             <a-assets>
                 <a-asset-item id="cat" src="./assets/cat.glb"></a-asset-item>
                 <a-asset-item id="rat" src="./assets/rat.glb"></a-asset-item>
@@ -98,7 +98,8 @@
             <a-entity id="animal-model" position="0 0 -2" scale="0.5 0.5 0.5"></a-entity>
             
             <!-- Camera (for AR display) -->
-            <a-camera></a-camera>
+            <a-camera position="0 0 0" look-controls="pointerLockEnabled: true;"></a-camera>
+
         </a-scene>
         <div id="options"></div>
     </div>
